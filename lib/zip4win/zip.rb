@@ -1,5 +1,7 @@
 require 'zip4win/version'
 require 'optparse'
+require 'pathname'
+require 'unicode'
 require 'zip'
 
 module Zip4win
@@ -69,7 +71,7 @@ module Zip4win
     def add_zip(zipfile, path, base_directory = nil)
       entry = if base_directory.nil? then path.basename else path.relative_path_from(base_directory) end
       puts "#{path}"
-      zipfile.add entry.to_s.encode('SJIS'), path.to_s
+      zipfile.add(conv_filename(entry.to_s), path.to_s)
 
       if path.directory?
         base_directory ||= path.parent
@@ -77,6 +79,10 @@ module Zip4win
           add_zip(zipfile, child, base_directory)
         end
       end
+    end
+
+    def conv_filename(filename)
+      Unicode.nfc_safe(filename).encode('SJIS', invalid: :replace, undef: :replace)
     end
   end
 end
