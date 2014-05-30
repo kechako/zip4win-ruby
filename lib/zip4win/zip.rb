@@ -1,7 +1,7 @@
 require 'zip4win/version'
 require 'optparse'
 require 'pathname'
-require 'unicode'
+require 'unf'
 require 'zip'
 
 module Zip4win
@@ -82,7 +82,7 @@ module Zip4win
     end
 
     def conv_filename(filename)
-      Unicode.nfc_safe(filename).encode('SJIS', invalid: :replace, undef: :replace)
+      filename.to_nfc.encode('SJIS', invalid: :replace, undef: :replace)
     end
   end
 end
