@@ -1,0 +1,82 @@
+require 'zip4win/version'
+require 'optparse'
+require 'zip'
+
+module Zip4win
+  class Zip
+    def initialize
+      @options = {}
+    end
+
+    def run
+      exit_code = 0
+      if parse_params
+        exit_code = 2 unless create_zip
+      else
+         exit_code = 1
+      end
+
+      exit_code
+    end
+
+    private
+
+    def parse_params
+      result = true
+      args = []
+      OptionParser.new "Usage: #{File.basename($0)} zipfile file [...]" do |parser|
+        parser.version = VERSION
+
+        args = parser.parse(ARGV)
+        result = parse_args(args)
+        unless result
+          print_help parser
+        end
+      end
+
+      result
+    end
+
+    def parse_args(args)
+      return false if args.size < 2
+
+      @zipfile = args.shift
+      @files = args
+
+      true
+    end
+
+    def print_help(parser)
+      puts parser
+    end
+
+    def init_zip
+      Zip.setup do |c|
+        c.default_compression = Zlib::BEST_COMPRESSION
+      end
+    end
+
+    def create_zip
+      ::Zip::File.open(@zipfile, ::Zip::File::CREATE) do |zipfile|
+        @files.each do |filename|
+          add_zip(zipfile, Pathname.new(filename))
+        end
+      end
+
+      true
+    end
+
+    def add_zip(zipfile, path, base_directory = nil)
+      entry = if base_directory.nil? then path.basename else path.relative_path_from(base_directory) end
+      puts "#{path}"
+      zipfile.add entry.to_s.encode('SJIS'), path.to_s
+
+      if path.directory?
+        base_directory ||= path.parent
+        path.each_child do |child|
+          add_zip(zipfile, child, base_directory)
+        end
+      end
+    end
+  end
+end
