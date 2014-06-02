@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 require "zip4win/version"
 require "zip4win/zip"
 
