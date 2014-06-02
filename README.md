@@ -1,6 +1,6 @@
 # Zip4win
 
-TODO: Write a gem description
+Zip4win create a zip archive for Windows.
 
 ## Installation
 
@@ -18,12 +18,6 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
-
-## Contributing
-
-1. Fork it ( https://github.com/[my-github-username]/zip4win/fork )
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create a new Pull Request
+```sh
+$ zip4win zipfile file [...]
+```
