@@ -8,6 +8,8 @@ module Zip4win
   class Zip
     def initialize
       @options = {}
+
+      init_zip
     end
 
     def run
@@ -53,7 +55,7 @@ module Zip4win
     end
 
     def init_zip
-      Zip.setup do |c|
+      ::Zip.setup do |c|
         c.default_compression = Zlib::BEST_COMPRESSION
       end
     end
