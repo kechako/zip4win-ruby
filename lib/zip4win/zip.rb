@@ -23,13 +23,21 @@ module Zip4win
       exit_code
     end
 
+    def names_stdin?
+      @options[:names_stdin]
+    end
+
+    attr_reader :zipfile, :files
+
     private
 
     def parse_params
       result = true
       args = []
-      OptionParser.new "Usage: #{File.basename($0)} zipfile file [...]" do |parser|
+      OptionParser.new "Usage: #{File.basename($0)} [options] zipfile [file [...]]" do |parser|
         parser.version = VERSION
+
+        parser.on('-@', '--names-stdin', 'Take the list of input files from standard input. Only one filename per line.') {|v| @options[:names_stdin] = v}
 
         args = parser.parse(ARGV)
         result = parse_args(args)
@@ -42,10 +50,13 @@ module Zip4win
     end
 
     def parse_args(args)
-      return false if args.size < 2
-
+      return false if args.size < 1
       @zipfile = args.shift
-      @files = args
+
+      unless names_stdin?
+        return false if args.size < 2
+        @files = args
+      end
 
       true
     end
@@ -62,8 +73,14 @@ module Zip4win
 
     def create_zip
       ::Zip::File.open(@zipfile, ::Zip::File::CREATE) do |zipfile|
-        @files.each do |filename|
-          add_zip(zipfile, Pathname.new(filename))
+        if names_stdin?
+          $stdin.each do |line|
+            add_zip(zipfile, Pathname.new(line.chomp))
+          end
+        else
+          @files.each do |filename|
+            add_zip(zipfile, Pathname.new(filename))
+          end
         end
       end
 
