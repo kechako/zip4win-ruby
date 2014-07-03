@@ -56,7 +56,7 @@ module Zip4win
       @zipfile = args.shift
 
       unless names_stdin?
-        return false if args.size < 2
+        return false if args.empty?
         @files = args
       end
 
